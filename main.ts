@@ -9,6 +9,29 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     grid.move(cursor, 0, -1)
     grid.place(shadowCursor, tiles.getTileLocation(grid.spriteCol(cursor), grid.spriteRow(cursor) + 1))
 })
+function updatePX (whichPlayer: string) {
+    if (moveBoatFlag == 1) {
+        if (whichPlayer == "player1") {
+            moveBoat(boatSpriteArrayP1[currentBoat])
+            if (isOverlapping(boatSpriteArrayP1)) {
+                if (rotateFlag != "nothing") {
+                    boatRotateArray[currentBoat] = rotateFlag
+                } else {
+                    grid.place(cursor, grid.getLocation(shadowCursor))
+                }
+            }
+        } else {
+            moveBoat(boatSpriteArrayP2[currentBoat])
+            if (isOverlapping(boatSpriteArrayP2)) {
+                if (rotateFlag != "nothing") {
+                    boatRotateArrayP2[currentBoat] = rotateFlag
+                } else {
+                    grid.place(cursor, grid.getLocation(shadowCursor))
+                }
+            }
+        }
+    }
+}
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     rotateFlag = boatRotateArray[currentBoat]
     turnBoat(currentBoat)
@@ -19,12 +42,13 @@ function makeBoatVisible (boatArray: Sprite[]) {
     }
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    currentBoat += 1
+    grid.place(cursor, tiles.getTileLocation(0, 0))
     if (currentBoat == 2) {
-        cursor.setFlag(SpriteFlag.Invisible, false)
-        moveBoatFlag = 0
-    } else {
-        currentBoat += 1
-        grid.place(cursor, tiles.getTileLocation(0, 0))
+        currentBoat = 0
+        for (let value4 of boatSpriteArrayP1) {
+            makeBoatInvisible(value4)
+        }
     }
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -69,6 +93,171 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     grid.move(cursor, 0, 1)
     grid.place(shadowCursor, tiles.getTileLocation(grid.spriteCol(cursor), grid.spriteRow(cursor) + -1))
 })
+function initP2 () {
+    boatSpriteArrayP2 = [[sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f . f f f f f f . 
+        . f f 2 2 2 2 f f f 2 2 2 2 f f 
+        . f 2 2 2 2 2 2 f 2 2 2 4 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 4 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f f 2 2 2 2 2 2 2 2 2 2 2 f f 
+        . . f f 2 2 2 2 2 2 2 2 2 f f . 
+        . . . f f 2 2 2 2 2 2 2 f f . . 
+        . . . . f f 2 2 2 2 2 f f . . . 
+        . . . . . f f 2 2 2 f f . . . . 
+        . . . . . . f f 2 f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Boat0), sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f . f f f f f f . 
+        . f f 2 2 2 2 f f f 2 2 2 2 f f 
+        . f 2 2 2 2 2 2 f 2 2 2 4 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 4 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f f 2 2 2 2 2 2 2 2 2 2 2 f f 
+        . . f f 2 2 2 2 2 2 2 2 2 f f . 
+        . . . f f 2 2 2 2 2 2 2 f f . . 
+        . . . . f f 2 2 2 2 2 f f . . . 
+        . . . . . f f 2 2 2 f f . . . . 
+        . . . . . . f f 2 f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Boat0)], [sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f . f f f f f f . 
+        . f f 2 2 2 2 f f f 2 2 2 2 f f 
+        . f 2 2 2 2 2 2 f 2 2 2 4 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 4 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f f 2 2 2 2 2 2 2 2 2 2 2 f f 
+        . . f f 2 2 2 2 2 2 2 2 2 f f . 
+        . . . f f 2 2 2 2 2 2 2 f f . . 
+        . . . . f f 2 2 2 2 2 f f . . . 
+        . . . . . f f 2 2 2 f f . . . . 
+        . . . . . . f f 2 f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Boat1), sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f . f f f f f f . 
+        . f f 2 2 2 2 f f f 2 2 2 2 f f 
+        . f 2 2 2 2 2 2 f 2 2 2 4 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 4 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f f 2 2 2 2 2 2 2 2 2 2 2 f f 
+        . . f f 2 2 2 2 2 2 2 2 2 f f . 
+        . . . f f 2 2 2 2 2 2 2 f f . . 
+        . . . . f f 2 2 2 2 2 f f . . . 
+        . . . . . f f 2 2 2 f f . . . . 
+        . . . . . . f f 2 f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Boat1), sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f . f f f f f f . 
+        . f f 2 2 2 2 f f f 2 2 2 2 f f 
+        . f 2 2 2 2 2 2 f 2 2 2 4 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 4 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f f 2 2 2 2 2 2 2 2 2 2 2 f f 
+        . . f f 2 2 2 2 2 2 2 2 2 f f . 
+        . . . f f 2 2 2 2 2 2 2 f f . . 
+        . . . . f f 2 2 2 2 2 f f . . . 
+        . . . . . f f 2 2 2 f f . . . . 
+        . . . . . . f f 2 f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Boat1)], [
+    sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f . f f f f f f . 
+        . f f 2 2 2 2 f f f 2 2 2 2 f f 
+        . f 2 2 2 2 2 2 f 2 2 2 4 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 4 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f f 2 2 2 2 2 2 2 2 2 2 2 f f 
+        . . f f 2 2 2 2 2 2 2 2 2 f f . 
+        . . . f f 2 2 2 2 2 2 2 f f . . 
+        . . . . f f 2 2 2 2 2 f f . . . 
+        . . . . . f f 2 2 2 f f . . . . 
+        . . . . . . f f 2 f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Boat2),
+    sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f . f f f f f f . 
+        . f f 2 2 2 2 f f f 2 2 2 2 f f 
+        . f 2 2 2 2 2 2 f 2 2 2 4 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 4 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f f 2 2 2 2 2 2 2 2 2 2 2 f f 
+        . . f f 2 2 2 2 2 2 2 2 2 f f . 
+        . . . f f 2 2 2 2 2 2 2 f f . . 
+        . . . . f f 2 2 2 2 2 f f . . . 
+        . . . . . f f 2 2 2 f f . . . . 
+        . . . . . . f f 2 f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Boat2),
+    sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f . f f f f f f . 
+        . f f 2 2 2 2 f f f 2 2 2 2 f f 
+        . f 2 2 2 2 2 2 f 2 2 2 4 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 4 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f f 2 2 2 2 2 2 2 2 2 2 2 f f 
+        . . f f 2 2 2 2 2 2 2 2 2 f f . 
+        . . . f f 2 2 2 2 2 2 2 f f . . 
+        . . . . f f 2 2 2 2 2 f f . . . 
+        . . . . . f f 2 2 2 f f . . . . 
+        . . . . . . f f 2 f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Boat2),
+    sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f . f f f f f f . 
+        . f f 2 2 2 2 f f f 2 2 2 2 f f 
+        . f 2 2 2 2 2 2 f 2 2 2 4 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 4 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f 2 2 2 2 2 2 2 2 2 2 2 2 2 f 
+        . f f 2 2 2 2 2 2 2 2 2 2 2 f f 
+        . . f f 2 2 2 2 2 2 2 2 2 f f . 
+        . . . f f 2 2 2 2 2 2 2 f f . . 
+        . . . . f f 2 2 2 2 2 f f . . . 
+        . . . . . f f 2 2 2 f f . . . . 
+        . . . . . . f f 2 f f . . . . . 
+        . . . . . . . f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Boat2)
+    ]]
+    boatRotateArrayP2 = ["up", "up", "up"]
+    for (let value4 of boatSpriteArrayP2) {
+        makeBoatInvisible(value4)
+    }
+}
 function makeBoatInvisible (boatArray: Sprite[]) {
     for (let value3 of boatArray) {
         value3.setFlag(SpriteFlag.Invisible, true)
@@ -81,10 +270,10 @@ function turnBoat (boatNum: number) {
         boatRotateArray[boatNum] = "up"
     }
 }
-function isOverlapping () {
+function isOverlapping (boatSpriteArrayPX: Sprite[][]) {
     for (let index = 0; index <= currentBoat - 1; index++) {
-        for (let previousBoatSprite2 of boatSpriteArray[index]) {
-            for (let currentBoatSprite2 of boatSpriteArray[currentBoat]) {
+        for (let previousBoatSprite2 of boatSpriteArrayPX[index]) {
+            for (let currentBoatSprite2 of boatSpriteArrayPX[currentBoat]) {
                 if (grid.spriteCol(previousBoatSprite2) == grid.spriteCol(currentBoatSprite2) && grid.spriteRow(previousBoatSprite2) == grid.spriteRow(currentBoatSprite2)) {
                     return 1
                 }
@@ -94,18 +283,21 @@ function isOverlapping () {
     return 0
 }
 let iterator = 0
+let boatRotateArrayP2: string[] = []
+let boatSpriteArrayP2: Sprite[][] = []
 let shadowCursor: Sprite = null
 let cursor: Sprite = null
 let moveBoatFlag = 0
-let boatSpriteArray: Sprite[][] = []
+let boatSpriteArrayP1: Sprite[][] = []
 let boatRotateArray: string[] = []
 let currentBoat = 0
 let rotateFlag = ""
 tiles.setCurrentTilemap(tilemap`level1`)
+initP2()
 rotateFlag = "nothing"
 currentBoat = 0
 boatRotateArray = ["up", "up", "up"]
-boatSpriteArray = [[sprites.create(img`
+boatSpriteArrayP1 = [[sprites.create(img`
     . . . . . b b b b b b . . . . . 
     . . . b b 9 9 9 9 9 9 b b . . . 
     . . b b 9 9 9 9 9 9 9 9 b b . . 
@@ -264,7 +456,7 @@ sprites.create(img`
     . . . . . b b b b b b . . . . . 
     `, SpriteKind.Boat2)
 ]]
-for (let value4 of boatSpriteArray) {
+for (let value4 of boatSpriteArrayP1) {
     makeBoatInvisible(value4)
 }
 moveBoatFlag = 1
@@ -291,22 +483,22 @@ shadowCursor = sprites.create(img`
     ........................
     ........................
     ........................
-    ..........ffff..........
-    ........ff1111ff........
-    .......fb111111bf.......
-    .......f11111111f.......
-    ......fd11111111df......
-    ......fd11111111df......
-    ......fddd1111dddf......
-    ......fbdbfddfbdbf......
-    ......fcdcf11fcdcf......
-    .......fb111111bf.......
-    ......fffcdb1bdffff.....
-    ....fc111cbfbfc111cf....
-    ....f1b1b1ffff1b1b1f....
-    ....fbfbffffffbfbfbf....
-    .........ffffff.........
-    ...........fff..........
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
     ........................
     ........................
     ........................
@@ -315,14 +507,5 @@ shadowCursor = sprites.create(img`
 grid.snap(cursor)
 grid.snap(shadowCursor)
 game.onUpdate(function () {
-    if (moveBoatFlag == 1) {
-        moveBoat(boatSpriteArray[currentBoat])
-        if (isOverlapping()) {
-            if (rotateFlag != "nothing") {
-                boatRotateArray[currentBoat] = rotateFlag
-            } else {
-                grid.place(cursor, grid.getLocation(shadowCursor))
-            }
-        }
-    }
+    updatePX("player2")
 })
